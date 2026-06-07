@@ -273,6 +273,12 @@ async function downloadFromLocations(json) {
 	})
 	if (!cdnRes.ok) throw new Error(`CDN download failed: ${cdnRes.status}`)
 	const buffer = new Uint8Array(await cdnRes.arrayBuffer())
+	const contentType = cdnRes.headers.get("content-type") || ""
+	if (buffer.length < 8) throw new Error(`CDN returned empty buffer (${buffer.length} bytes)`)
+	if (contentType.includes("text/html")) {
+		const preview = bufferToString(buffer.subarray(0, Math.min(200, buffer.length)))
+		throw new Error(`CDN returned HTML instead of asset (${contentType}). Preview: ${JSON.stringify(preview)}`)
+	}
 	return { buffer, assetTypeId: json.assetTypeId }
 }
 
@@ -286,6 +292,12 @@ async function processAssetResponse(res) {
 	})
 	if (!cdnRes.ok) throw new Error(`CDN download failed: ${cdnRes.status}`)
 	const buffer = new Uint8Array(await cdnRes.arrayBuffer())
+	if (buffer.length < 8) throw new Error(`CDN returned empty buffer (${buffer.length} bytes)`)
+	const contentType = cdnRes.headers.get("content-type") || ""
+	if (contentType.includes("text/html")) {
+		const preview = bufferToString(buffer.subarray(0, Math.min(200, buffer.length)))
+		throw new Error(`CDN returned HTML instead of asset (${contentType}). Preview: ${JSON.stringify(preview)}`)
+	}
 	return { buffer, assetTypeId: json.assetTypeId }
 }
 
