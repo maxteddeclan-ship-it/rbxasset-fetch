@@ -9,7 +9,7 @@ port = 8787
 # KV namespace for cross-isolate caching
 [[kv_namespaces]]
 binding = "ASSET_CACHE"
-id = "99fc61092e4748d58bdf77d67f5d72a3"
+id = "2256ce1178f645309c20388de2327aca"
 
 # Environment variables
 [vars]
